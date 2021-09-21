@@ -1,0 +1,15 @@
+{% if ((model_func == "K-means") and (data_format == "example"))%}
+df = pd.read_csv("datasets/iris.csv")
+df.head(){% endif %}
+{% if ((model_func == "Gauss") and (data_format == "example")) or ((model_func == "DBSCAN") and (data_format == "example")) %}
+df = pd.read_csv("datasets/iris2.csv", header = None)
+df.head(){% endif %}
+{% if data_format == "Spiral" %}
+df = pd.read_csv("datasets/spiral.csv", header = None)
+df.head(){% endif %}
+{% if data_format == "Aggregation" %}
+df = pd.read_csv("datasets/Aggregation.csv", header = None)
+df.head(){% endif %}
+{% if data_format == "R15" %}
+df = pd.read_csv("datasets/R15.csv", header = None)
+df.head(){% endif %}

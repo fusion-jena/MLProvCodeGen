@@ -1,0 +1,32 @@
+#Use GPU?
+{% if use_gpu %}
+use_cuda = torch.cuda.is_available()
+{% else %}
+use_cuda = False
+{% endif %}
+device = torch.device("cuda" if use_cuda else "cpu")
+
+#Configure Neural Network Models
+class Model(nn.Module):
+    def __init__(self, input_dim):
+        super(Model, self).__init__()
+        self.layer1 = nn.Linear(input_dim, {{ neuron_number }})
+        self.layer2 = nn.Linear({{ neuron_number }}, {{ neuron_number }})
+        self.layer3 = nn.Linear({{ neuron_number }}, output_dim)
+        
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        x = {{ activation_func }}
+        return x
+
+model     = Model(X_train.shape[1])
+{% if default and optimizer == "torch.optim.SGD(" %}
+optimizer = {{ optimizer}}model.parameters(), lr = 1)
+{% elif default %}
+optimizer = {{ optimizer }}model.parameters())
+{% else %}
+optimizer = {{ optimizer }}model.parameters(), lr={{ lr }})
+{% endif %}
+loss_fn   = {{ loss_func }}
+model

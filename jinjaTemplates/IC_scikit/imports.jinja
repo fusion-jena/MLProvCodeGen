@@ -1,0 +1,15 @@
+{% if visualization_tool == "comet.ml" %}
+from comet_ml import Experiment  # has to be 1st import
+{% endif %}
+import numpy as np
+import sklearn
+from {{ ".".join(model_func.split(".")[:-1]) }} import {{ model_func.split(".")[-1] }}
+{% if data_format == "Image files" %}
+from torchvision import datasets, transforms
+import urllib
+import zipfile
+{% endif %}
+{% if visualization_tool == "Tensorboard" %}
+from tensorboardX import SummaryWriter
+from datetime import datetime
+{% endif %}

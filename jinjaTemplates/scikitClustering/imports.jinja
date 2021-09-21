@@ -1,0 +1,21 @@
+{% if model_func == "K-means" %}
+from sklearn.cluster import KMeans
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+from matplotlib import pyplot as plt
+%matplotlib inline{% endif %}
+{% if model_func == "Gauss" %}
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+from sklearn.mixture import GaussianMixture
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler{% endif %}
+{% if model_func == "DBSCAN" %}
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+from sklearn.cluster import DBSCAN
+from sklearn import metrics
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler{% endif %}

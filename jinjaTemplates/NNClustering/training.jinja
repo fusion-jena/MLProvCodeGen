@@ -1,0 +1,32 @@
+#Model Training
+EPOCHS  = {{ epochs }}
+X_train = Variable(torch.from_numpy(X_train)).float()
+{% if dataset == "Iris" %}
+y_train = Variable(torch.from_numpy(y_train)).long()
+{% elif dataset == "Spiral" or dataset == "Aggregation" or dataset == "R15" %}
+y_train = Variable(y_train).long()
+{% endif %}
+X_test  = Variable(torch.from_numpy(X_test)).float()
+{% if dataset == "Iris" %}
+y_test  = Variable(torch.from_numpy(y_test)).long()
+{% elif dataset == "Spiral" or dataset == "Aggregation" or dataset == "R15" %}
+y_test  = Variable(y_test).long()
+{% endif %}
+
+loss_list     = np.zeros((EPOCHS,))
+accuracy_list = np.zeros((EPOCHS,))
+
+for epoch in tqdm.trange(EPOCHS):
+    y_pred = model(X_train)
+    loss = loss_fn(y_pred, y_train)
+    loss_list[epoch] = loss.item()
+    
+    # Zero gradients
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    
+    with torch.no_grad():
+        y_pred = model(X_test)
+        correct = (torch.argmax(y_pred, dim=1) == y_test).type(torch.FloatTensor)
+        accuracy_list[epoch] = correct.mean()

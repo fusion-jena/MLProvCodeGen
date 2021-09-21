@@ -1,0 +1,67 @@
+{% if data_format == "Numpy arrays" %}
+# INSERT YOUR DATA HERE
+# Expected format: [images, labels]
+# - images has array shape (num samples, color channels, height, width)
+# - labels has array shape (num samples, )
+train_data = fake_data()  # required
+val_data = fake_data()    # optional
+test_data = None          # optional
+{% elif data_format == "Image files" %}
+# INSERT YOUR DATA HERE
+# Expected format: One folder per class, e.g.
+# train
+# --- dogs
+# |   +-- lassie.jpg
+# |   +-- komissar-rex.png
+# --- cats
+# |   +-- garfield.png
+# |   +-- smelly-cat.png
+#
+# Example: https://github.com/jrieke/traingenerator/tree/main/data/image-data
+train_data = "data/image-data"  # required
+val_data = "data/image-data"    # optional
+test_data = None                # optional
+{% elif data_format == "Public dataset"%}
+# Dataset {{ dataset }} will be loaded further down.
+{% endif %}
+
+# Set up hyperparameters.
+lr = {{ lr }}
+batch_size = {{ batch_size }}
+num_epochs = {{ num_epochs }}
+
+# Set up logging.
+{% if visualization_tool == "Tensorboard" or checkpoint %}
+experiment_id = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+{% endif %}
+{% if visualization_tool == "Tensorboard" %}
+writer = SummaryWriter(logdir=f"logs/{experiment_id}")
+{% elif visualization_tool == "Aim" %}
+aim_session = Session({% if aim_experiment %}experiment="{{ aim_experiment }}"{% endif %})
+aim_session.set_params({"lr": lr, "batch_size": batch_size, "num_epochs": num_epochs}, name="hparams")
+{% elif visualization_tool == "Weights & Biases" %}
+wandb.init(
+{% if wb_project %}
+    project="{{ wb_project }}", 
+{% endif %}
+{% if wb_name %}
+    name="{{ wb_name }}", 
+{% endif %}
+    config={"lr": lr, "batch_size": batch_size, "num_epochs": num_epochs}
+)
+{% elif visualization_tool == "comet.ml" %}
+experiment = Experiment("{{ comet_api_key }}"{% if comet_project %}, project_name="{{ comet_project }}"{% endif %})
+{% endif %}
+{% if checkpoint %}
+checkpoint_dir = Path(f"checkpoints/{experiment_id}")
+checkpoint_dir.mkdir(parents=True, exist_ok=True)
+{% endif %}
+print_every = {{ print_every }}  # batches
+
+# Set up device.
+{% if gpu %}
+use_cuda = torch.cuda.is_available()
+{% else %}
+use_cuda = False
+{% endif %}
+device = torch.device("cuda" if use_cuda else "cpu")

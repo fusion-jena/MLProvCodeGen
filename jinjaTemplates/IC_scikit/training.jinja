@@ -1,0 +1,15 @@
+def evaluate(data, name):
+    if data is None:  # val/test can be empty
+        return
+
+    images, labels = data
+    acc = model.score(images, labels)
+    print(f"{name + ':':6} accuracy: {acc}")
+    {% if visualization_tool == "Tensorboard" %}
+    writer.add_scalar(f"{name}_accuracy", acc)
+    {% elif visualization_tool == "comet.ml" %}
+    experiment.log_metric(f"{name}_accuracy", acc)
+    {% endif %}
+
+# Train on train_data.
+model.fit(*processed_train_data)

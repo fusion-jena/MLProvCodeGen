@@ -1,0 +1,20 @@
+{% if (model_func == "K-means" and data_format == "example") %}
+plt.scatter(df['petal length in cm'],df['petal width in cm'])
+plt.xlabel('petal length in cm')
+plt.ylabel('petal width in cm'){% endif %}
+{% if ((model_func == "Gauss" and data_format == "example") or (model_func == "DBSCAN" and data_format == "example")) %}
+plt.scatter(df[0],df[1])
+plt.xlabel('x')
+plt.ylabel('y'){% endif %}
+{% if data_format == "Spiral" %}
+plt.scatter(df[0],df[1])
+plt.xlabel('x')
+plt.ylabel('y'){% endif %}
+{% if data_format == "Aggregation" %}
+plt.scatter(df[0],df[1])
+plt.xlabel('x')
+plt.ylabel('y'){% endif %}
+{% if data_format == "R15" %}
+plt.scatter(df[0],df[1])
+plt.xlabel('x')
+plt.ylabel('y'){% endif %}

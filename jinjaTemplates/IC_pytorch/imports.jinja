@@ -1,0 +1,27 @@
+{% if visualization_tool == "comet.ml" %}
+from comet_ml import Experiment  # has to be 1st import
+{% endif %}
+import numpy as np
+import torch
+from torch import optim, nn
+from torch.utils.data import DataLoader, TensorDataset
+from torchvision import models, datasets, transforms
+from ignite.engine import Events, create_supervised_trainer, create_supervised_evaluator
+from ignite.metrics import Accuracy, Loss
+{% if data_format == "Image files" %}
+import urllib
+import zipfile
+{% endif %}
+{% if visualization_tool == "Tensorboard" or checkpoint %}
+from datetime import datetime
+{% endif %}
+{% if visualization_tool == "Tensorboard" %}
+from tensorboardX import SummaryWriter
+{% elif visualization_tool == "Aim" %}
+from aim import Session
+{% elif visualization_tool == "Weights & Biases" %}
+import wandb
+{% endif %}
+{% if checkpoint %}
+from pathlib import Path
+{% endif %}

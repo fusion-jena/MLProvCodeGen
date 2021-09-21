@@ -1,0 +1,31 @@
+{% if ((model_func == "K-means") and (data_format == "Aggregation"))%}
+km = KMeans(n_clusters = 8)
+y_predicted = km.fit_predict(df[[0,1]])
+y_predicted{% endif %}
+{% if ((model_func == "K-means") and (data_format == "Spiral")) or ((model_func == "K-means") and (data_format == "R15"))%}
+km = KMeans(n_clusters = 3)
+y_predicted = km.fit_predict(df[[0,1]])
+y_predicted{% endif %}
+{% if ((model_func == "K-means") and (data_format == "example"))%}
+km = KMeans(n_clusters=3)
+y_predicted = km.fit_predict(df[['petal length in cm','petal width in cm']])
+y_predicted{% endif %}
+{% if ((model_func == "Gauss") and (data_format == "Spiral")) or ((model_func == "Gauss") and (data_format == "R15")) or ((model_func == "Gauss") and (data_format == "example")) %}
+EM = GaussianMixture(n_components=3)
+EM.fit(df)
+cluster = EM.predict(df)
+y_predicted = EM.fit_predict(df)
+y_predicted{% endif %}
+{% if ((model_func == "Gauss") and (data_format == "Aggregation")) %}
+EM = GaussianMixture(n_components=8)
+EM.fit(df)
+cluster = EM.predict(df)
+y_predicted = EM.fit_predict(df)
+y_predicted{% endif %}
+{% if model_func == "DBSCAN" %}
+# #############################################################################
+# Compute DBSCAN
+db = DBSCAN(eps=0.3, min_samples=10).fit(X)
+core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+core_samples_mask[db.core_sample_indices_] = True
+labels = db.labels_{% endif %}

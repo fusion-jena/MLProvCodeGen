@@ -1,0 +1,82 @@
+# Set up pytorch-ignite trainer and evaluator.
+trainer = create_supervised_trainer(
+    model,
+    optimizer,
+    loss_func,
+    device=device,
+)
+{# TODO: Atm, the train metrics get accumulated, see torch_models.py #}
+metrics = {
+    "accuracy": Accuracy(),
+    "loss": Loss(loss_func),
+}
+evaluator = create_supervised_evaluator(
+    model, metrics=metrics, device=device
+)
+
+@trainer.on(Events.ITERATION_COMPLETED(every=print_every))
+def log_batch(trainer):
+    batch = (trainer.state.iteration - 1) % trainer.state.epoch_length + 1
+    print(
+        f"Epoch {trainer.state.epoch} / {num_epochs}, "
+        f"batch {batch} / {trainer.state.epoch_length}: "
+        f"loss: {trainer.state.output:.3f}"
+    )
+
+@trainer.on(Events.EPOCH_COMPLETED)
+def log_epoch(trainer):
+    print(f"Epoch {trainer.state.epoch} / {num_epochs} average results: ")
+
+    def log_results(name, metrics, epoch):
+        print(
+            f"{name + ':':6} loss: {metrics['loss']:.3f}, "
+            f"accuracy: {metrics['accuracy']:.3f}"
+        )
+        {% if visualization_tool == "Tensorboard" %}
+        writer.add_scalar(f"{name}_loss", metrics["loss"], epoch)
+        writer.add_scalar(f"{name}_accuracy", metrics["accuracy"], epoch)
+        {% elif visualization_tool == "Aim" %}
+        aim_session.track(metrics["loss"], name="loss", subset=name, epoch=epoch)
+        aim_session.track(metrics["accuracy"], name="accuracy", subset=name, epoch=epoch)
+        {% elif visualization_tool == "Weights & Biases" %}
+        wandb.log({f"{name}_loss": metrics["loss"], f"{name}_accuracy": metrics["accuracy"]})
+        {% elif visualization_tool == "comet.ml" %}
+        experiment.log_metric(f"{name}_loss", metrics["loss"])
+        experiment.log_metric(f"{name}_accuracy", metrics["accuracy"])
+        {% endif %}
+
+    # Train data.
+    evaluator.run(train_loader)
+    log_results("train", evaluator.state.metrics, trainer.state.epoch)
+    
+    # Val data.
+    if val_loader:
+        evaluator.run(val_loader)
+        log_results("val", evaluator.state.metrics, trainer.state.epoch)
+
+    # Test data.
+    if test_loader:
+        evaluator.run(test_loader)
+        log_results("test", evaluator.state.metrics, trainer.state.epoch)
+
+    print()
+    print("-" * 80)
+    print()
+
+{# TODO: Maybe use this instead: https://pytorch.org/ignite/handlers.html#ignite.handlers.ModelCheckpoint #}
+{% if checkpoint %}
+@trainer.on(Events.EPOCH_COMPLETED)
+def checkpoint_model(trainer):
+    torch.save(model, checkpoint_dir / f"model-epoch{trainer.state.epoch}.pt")
+
+{% endif %}
+# Start training.
+trainer.run(train_loader, max_epochs=num_epochs)
+{% if visualization_tool == "Weights & Biases" %}
+wandb.finish()
+{% endif %}
+
+# Compare Algorithms
+pyplot.boxplot(results, labels=names)
+pyplot.title('Algorithm Comparison')
+pyplot.show()

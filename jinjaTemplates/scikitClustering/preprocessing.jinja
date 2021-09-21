@@ -1,0 +1,47 @@
+{% if model_func == "K-means" and data_format == "example" %}
+# preprocessing using MinMaxScaler()
+scaler = MinMaxScaler()
+
+df['petal length in cm'] = scaler.fit_transform(df[['petal length in cm']])
+df['petal width in cm'] = scaler.fit_transform(df[['petal width in cm']])
+
+df.head(){% endif %}
+{% if ((model_func == "K-means" and data_format == "Spiral") or (model_func == "Gauss" and data_format == "Spiral")) %}
+# preprocessing using MinMaxScaler()
+scaler = MinMaxScaler()
+
+df[0] = scaler.fit_transform(df[[0]])
+df[1] = scaler.fit_transform(df[[1]])
+
+df.head(){% endif %}
+{% if ((model_func == "K-means" and data_format == "Aggregation") or (model_func == "Gauss" and data_format == "Aggregation")) %}
+# preprocessing using MinMaxScaler()
+scaler = MinMaxScaler()
+
+df[0] = scaler.fit_transform(df[[0]])
+df[1] = scaler.fit_transform(df[[1]])
+
+df.head(){% endif %}
+{% if ((model_func == "K-means" and data_format == "R15") or (model_func == "Gauss" and data_format == "R15")) %}
+# preprocessing using MinMaxScaler()
+scaler = MinMaxScaler()
+
+df[0] = scaler.fit_transform(df[[0]])
+df[1] = scaler.fit_transform(df[[1]])
+
+df.head(){% endif %}
+{% if ((model_func == "Gauss" and data_format == "example")) %}
+# preprocessing using MinMaxScaler()
+scaler = MinMaxScaler()
+
+df[0] = scaler.fit_transform(df[[0]])
+df[1] = scaler.fit_transform(df[[1]])
+
+df.head(){% endif %}
+{% if model_func == "DBSCAN" %}
+dfSize = df.size
+dfSize /= 2
+X, labels_true = make_blobs(n_samples=int(dfSize))
+X = df
+
+X = StandardScaler().fit_transform(X){% endif %}
