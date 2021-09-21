@@ -1,6 +1,6 @@
 # MLProvCodeGen
 
-MLProvCodeGen is a tool for provenance based code generation of ML experiments in the Jupyter environment. This tool is developed to help ML practitioners and data scientists and can also be used in education to showcase results of ML workflows for a problem with different parameters. It can be used to tune hyperparameters and see the difference in the results.
+MLProvCodeGen is a tool for provenance based code generation of ML experiments in the Jupyter environment. Users can provide their input with different frameworks, methods, datasets, etc., and generate ML code using a template-based mechanism. This tool is developed to help ML practitioners and data scientists and can also be used in education to showcase results of ML workflows for a problem with different parameters.
 
 
 This extension is composed of a Python package named `MLProvCodeGen`
