@@ -1,0 +1,17 @@
+#ROC Curve 
+plt.figure(figsize=(10, 10))
+plt.plot([0, 1], [0, 1], 'k--')
+
+# One hot encoding
+enc = OneHotEncoder()
+Y_onehot = enc.fit_transform(y_test[:, np.newaxis]).toarray()
+
+with torch.no_grad():
+    y_pred = model(X_test).numpy()
+    fpr, tpr, threshold = roc_curve(Y_onehot.ravel(), y_pred.ravel())
+    
+plt.plot(fpr, tpr, label='AUC = {:.3f}'.format(auc(fpr, tpr)))
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title('ROC curve')
+plt.legend();
