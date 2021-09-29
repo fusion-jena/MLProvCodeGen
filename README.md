@@ -96,8 +96,8 @@ jupyter lab build --minimize=False
 By following steps must be taken to add a new ML experiment to this extension:
 
 1.	Have an existing Python script for your machine learning experiment.
-2.	Paste the code into a Jupyter notebook and split it into cells following the PD\left(M_D\right) execution order.
-3.	Create a Jinja template for each cell and wrap if-statements around the Python code depending on which variables are important. Refer to PD\left(M_D\right) and existing modules for what the provenance data of your experiment might look like.
+2.	Paste the code into a Jupyter notebook and split it into cells following the execution order of your experiment.
+3.	Create a Jinja template for each cell and wrap if-statements around the Python code depending on which variables are important. Refer to existing modules for what the provenance data of your experiment might look like.
 4.	Load the templates in a Python procedure that also creates a new notebook element and write their rendered outputs to the notebook.
 5.	Expect every local variable for the procedure to be extracted from a dictionary input.
 6.	Add HTML input elements to the user interface based on your provenance variables.
