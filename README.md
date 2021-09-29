@@ -91,6 +91,21 @@ By default, the `jlpm run build` command generates the source maps for this exte
 ```bash
 jupyter lab build --minimize=False
 ```
+### Adding new ML experiments
+
+By following steps must be taken to add a new ML experiment to this extension:
+1	Have an existing Python script for your machine learning experiment.
+2	Paste the code into a Jupyter notebook and split it into cells following the PD\left(M_D\right) execution order.
+3	Create a Jinja template for each cell and wrap if-statements around the Python code depending on which variables are important. Refer to PD\left(M_D\right) and existing modules for what the provenance data of your experiment might look like.
+4	Load the templates in a Python procedure that also creates a new notebook element and write their rendered outputs to the notebook.
+5	Expect every local variable for the procedure to be extracted from a dictionary input.
+6	Add HTML input elements to the user interface based on your provenance variables.
+7	Combine the variable values into a JavaScript/TypeScript dictionary.
+8	Create a new server request for your module and pass the dictionary through it as “stringified” JSON data.
+9	Once the frontend, backend, and server connection work, your module has been added successfully.
+Note that while these steps might seem complicated, most of them only require copy-pasting already existing code. The only new part for most users is templating through Jinja. However, the Jinja has good documentation, and its syntax is very simple, requiring only if-loops.
+
+
 
 ### Uninstall
 
