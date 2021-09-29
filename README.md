@@ -21,7 +21,7 @@ pip install MLProvCodeGen
 ```
 ## Instructions
 
-To use MLProvCodeGen after installation, open the JupyterLab command line by pressing ctrl+shift+c and enter the command
+To use MLProvCodeGen after installation, open the JupyterLab command line by pressing `ctrl+shift+c and enter the command`
 `
 Code Generation from Provenance Data
 `
