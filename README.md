@@ -1,4 +1,4 @@
-# MLProvCodeGen
+# MLProvCodeGen - Machine Learning Provenance Code Generator
 
 ![Github Actions Status](https://github.com/fusion-jena/MLProvCodeGen/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fusion-jena/MLProvCodeGen/main?urlpath=lab)
 
@@ -19,7 +19,10 @@ for the frontend extension.
 ```bash
 pip install MLProvCodeGen
 ```
+## Instructions
 
+To use MLProvCodeGen after installation, open the JupyterLab command line by pressing ctrl+shift+c and enter "Code Generation from Provenance Data".
+![MLProvCodeGen_CommandLine](https://user-images.githubusercontent.com/85288390/135293768-380ba9d1-338a-4d18-96bb-b35a11fb70a7.PNG)
 
 ## Troubleshoot
 
@@ -81,3 +84,4 @@ jupyter lab build --minimize=False
 ```bash
 pip uninstall MLProvCodeGen
 ```
+
