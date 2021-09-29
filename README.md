@@ -91,7 +91,7 @@ jupyter lab build --minimize=False
 ```
 ### Adding new ML experiments
 
-By following steps must be taken to add a new ML experiment to this extension:
+The following steps must be taken to add a new ML experiment to this extension:
 
 1.	Have an existing Python script for your machine learning experiment.
 2.	Paste the code into a Jupyter notebook and split it into cells following the execution order of your experiment.
