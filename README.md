@@ -103,7 +103,7 @@ The following steps must be taken to add a new ML experiment to this extension:
 8.	Create a new server request for your module and pass the dictionary through it as “stringified” JSON data.
 9.	Once the frontend, backend, and server connection work, your module has been added successfully.
 
-Note that while these steps might seem complicated, most of them only require copy-pasting already existing code. The only new part for most users is templating through Jinja. However, the Jinja has good documentation, and its syntax is very simple, requiring only if-loops.
+Note that while these steps might seem complicated, most of them only require copy-pasting already existing code. The only new part for most users is templating through Jinja. However, Jinja has good documentation, and its syntax is very simple, requiring only if-loops.
 
 
 
