@@ -1,55 +1,69 @@
 {
-  "name": "MLProvCodeGen",
+  "name": "extension",
   "version": "0.1.0",
-  "description": "MLProvCodeGen is a tool for provenance based code generation of ML experiments in the Jupyter environment. This tool is developed to help ML practitioners and data scientists and can also be used in education to showcase results of ML workflows for a problem with different parameters. It can be used to tune hyperparameters and see the difference in the results.",
+  "description": "A JupyterLab extension.",
   "keywords": [
     "jupyter",
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/fusion-jena/MLProvCodeGen",
+  "homepage": "https://github.com/TarekAlMustafa/MLProvCodeGen1.0",
   "bugs": {
-    "url": "https://github.com/fusion-jena/MLProvCodeGen/issues"
+    "url": "https://github.com/TarekAlMustafa/MLProvCodeGen1.0/issues"
   },
-  "license": "MIT",
-  "author": "Tarek Al Mustafa",
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Tarek Al Mustafa",
+    "email": "tarek.almustafa@uni-jena.de"
+  },
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,.js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+    "schema/*.json"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fusion-jena/MLProvCodeGen.git"
+    "url": "https://github.com/TarekAlMustafa/MLProvCodeGen1.0.git"
   },
   "scripts": {
-    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
-    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "build": "jlpm build:lib && jlpm build:labextension:dev",
+    "build:prod": "jlpm clean && jlpm build:lib && jlpm build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc",
-    "clean": "jlpm run clean:lib",
+    "clean": "jlpm clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
-    "clean:labextension": "rimraf MLProvCodeGen/labextension",
-    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
-    "eslint": "eslint . --ext .ts,.tsx --fix",
-    "eslint:check": "eslint . --ext .ts,.tsx",
-    "install:extension": "jupyter labextension develop --overwrite .",
-    "prepare": "jlpm run clean && jlpm run build:prod",
+    "clean:lintcache": "rimraf .eslintcache .stylelintcache",
+    "clean:labextension": "rimraf extension/labextension",
+    "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
+    "eslint": "jlpm eslint:check --fix",
+    "eslint:check": "eslint . --cache --ext .ts,.tsx",
+    "install:extension": "jlpm build",
+    "lint": "jlpm stylelint && jlpm prettier && jlpm eslint",
+    "lint:check": "jlpm stylelint:check && jlpm prettier:check && jlpm eslint:check",
+    "prettier": "jlpm prettier:base --write --list-different",
+    "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "prettier:check": "jlpm prettier:base --check",
+    "stylelint": "jlpm stylelint:check --fix",
+    "stylelint:check": "stylelint --cache \"style/**/*.css\"",
     "watch": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^3.0.0",
-    "@jupyterlab/coreutils": "^5.0.0",
-    "@jupyterlab/services": "^6.0.0"
-
+    "@jupyterlab/application": "^3.2.9",
+    "@jupyterlab/apputils": "^3.2.9",
+    "@jupyterlab/coreutils": "^5.1.0",
+    "@jupyterlab/filebrowser": "^3.3.2",
+    "@jupyterlab/launcher": "^3.2.9",
+    "@jupyterlab/services": "^6.1.0",
+    "@jupyterlab/settingregistry": "^3.1.0"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.0.0",
+    "@jupyterlab/builder": "^3.1.0",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
     "eslint": "^7.14.0",
@@ -59,6 +73,11 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
+    "stylelint": "^14.3.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-recommended": "^6.0.0",
+    "stylelint-config-standard": "~24.0.0",
+    "stylelint-prettier": "^2.0.0",
     "typescript": "~4.1.3"
   },
   "sideEffects": [
@@ -66,18 +85,33 @@
     "style/index.js"
   ],
   "styleModule": "style/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "jupyterlab": {
     "discovery": {
-        "server": {
-          "managers": [
-            "pip"
-          ],
-          "base": {
-            "name": "MLProvCodeGen"
-          }
+      "server": {
+        "managers": [
+          "pip"
+        ],
+        "base": {
+          "name": "extension"
         }
+      }
     },
     "extension": true,
-    "outputDir": "MLProvCodeGen/labextension"
+    "outputDir": "extension/labextension",
+    "schemaDir": "schema"
+  },
+  "jupyter-releaser": {
+    "hooks": {
+      "before-build-npm": [
+        "python -m pip install jupyterlab~=3.1",
+        "jlpm"
+      ],
+      "before-build-python": [
+        "jlpm clean:all"
+      ]
+    }
   }
 }

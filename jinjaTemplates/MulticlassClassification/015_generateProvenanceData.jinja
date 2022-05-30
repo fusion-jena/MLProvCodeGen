@@ -1,0 +1,19 @@
+#get binder URL
+servers = list(notebookapp.list_running_servers())
+url = servers[0]['base_url']
+urlcombined = 'https://notebooks.gesis.org/'+url+'lab/tree/GeneratedProvenanceData/'
+urlcombined2 = 'https://hub.gke2.mybinder.org/'+url+'lab/tree/GeneratedProvenanceData/'
+
+#add visualization to PATH
+os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
+
+#get time for filenames
+timestring = datetime.datetime.now().strftime('%Y-%m-%d--%H-%M-%S')
+ProvenanceNameImage = ('Provenance_MulticlassClassification_' + timestring + '.png')
+
+dot = prov_to_dot(d1, direction='RL')
+dot.write_png('../GeneratedProvenanceData/'+ProvenanceNameImage)
+
+print(urlcombined+ProvenanceNameImage)
+print(urlcombined2+ProvenanceNameImage)
+Image('../GeneratedProvenanceData/'+ProvenanceNameImage)

@@ -1,0 +1,144 @@
+def get_size(bytes, suffix="B"):
+    """
+    Scale bytes to its proper format
+    e.g:
+        1253656 => '1.20MB'
+        1253656678 => '1.17GB'
+    """
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+d1 = ProvDocument()
+d1.add_namespace('prov', 'http://www.w3.org/ns/prov#')
+d1.add_namespace('ex', 'https://github.com/TarekAlMustafa/MLProvCodeGen1.0/')
+d1.add_namespace('foaf', 'http://xmlns.com/foaf/0.1/')
+d1.add_namespace('p-plan', 'http://purl.org/net/p-plan')
+
+e_MLProvCodeGen = d1.entity(
+        'ex:MLProvCodeGen',(
+            ('prov:type', PROV['Plan']),
+))
+ag_author = d1.agent(
+        'ex:Tarek Al Mustafa',(
+            ('prov:type', PROV['Person']),
+            ('foaf:givenName', 'Tarek Al Mustafa'),
+            ('foaf:mbox', '<tarek.almustafa@uni-jena.de>'),
+            ('prov:role', 'Author'),
+))
+kernellist = !jupyter kernelspec list
+e_notebook = d1.entity(
+        'ex:notebook',(
+            ('ex:programming_language','Python'),
+            ('ex:programming_language_version', cpuinfo.get_cpu_info()['python_version']),
+            ('ex:kernel','python3(ipykernel)'),
+            ('prov:type', PROV['File']),
+            ('ex:fileformat', '.ipynb'),
+            ('ex:name', 'MulticlassClassification.ipynb'),
+            ('ex:creation_date', str(date.today())),
+            ('ex:last_modified', 'TODO'),
+))
+e_notebook.add_asserted_type('prov:Collection')
+d1.wasAttributedTo(e_notebook, ag_author)
+a_generateNotebook = d1.activity('ex:GenerateNotebook')
+d1.wasAssociatedWith(a_generateNotebook, ag_author, plan=e_MLProvCodeGen)
+d1.wasGeneratedBy(e_notebook, a_generateNotebook)
+
+#set_experimentinfo
+e_experimentinfo = d1.entity('ex:Cell Experiment Info', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setexperimentinfo = d1.activity('ex:set_experiment_info()')
+a_setdate = d1.activity('ex:date.today()')
+
+d1.wasStartedBy(a_setexperimentinfo,e_experimentinfo, time=datetime.datetime.now())
+d1.wasInformedBy(a_setexperimentinfo, a_setdate)  
+d1.hadMember(e_notebook, e_experimentinfo)
+e_experimentinfo_data = d1.entity(
+    'ex:Experiment Info Data',(
+        ('ex:title', 'Image Classification'),
+        ('ex:creation_date', str(date.today())),
+        ('ex:task_type', 'ImageClassification_pytorch'),
+))
+d1.wasGeneratedBy(e_experimentinfo_data, a_setexperimentinfo)
+
+#set_hardware_info()
+uname = platform.uname()
+sysInfo = str(uname.system +' '+ uname.release +' Version: '+ uname.version +' Machine: '+ uname.machine)
+    
+svmem = psutil.virtual_memory()
+
+GPUs = GPUtil.getGPUs()
+gpuList = []
+for gpu in GPUs:
+    gpu_id = gpu.id
+    gpu_name = gpu.name
+    gpuList.append((gpu_id , gpu_name))
+
+        
+e_hardwareinfo = d1.entity('ex:Cell Hardware Info', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_sethardwareinfo = d1.activity('ex:set_hardware_info()')
+a_platform_uname = d1.activity('ex:platform.uname()')
+a_cpuinfo = d1.activity('ex:cpuinfo.get_cpu_info()')
+a_svmemtotal = d1.activity('ex:svmem.total')
+a_getsize = d1.activity('ex:get_size(svmem.total)')
+a_GPUtilgetGPU = d1.activity('ex:GPUtil.getGPUs()')
+d1.wasStartedBy(a_sethardwareinfo, e_hardwareinfo, time=datetime.datetime.now())
+d1.wasInformedBy(a_sethardwareinfo, a_platform_uname)
+d1.wasInformedBy(a_sethardwareinfo, a_cpuinfo)
+d1.wasInformedBy(a_sethardwareinfo, a_svmemtotal)
+d1.wasInformedBy(a_svmemtotal, a_getsize)
+d1.wasInformedBy(a_sethardwareinfo, a_GPUtilgetGPU)
+d1.hadMember(e_notebook, e_hardwareinfo)
+e_hardwareinfo_data = d1.entity(
+    'ex:Hardware Info Data',(
+        ('ex:CPU', cpuinfo.get_cpu_info()['brand_raw']),
+        ('ex:RAM',  get_size(svmem.total)),
+        ('ex:Operating System', sysInfo),
+        ('ex:GPUs', str(gpuList)),
+))
+d1.wasGeneratedBy(e_hardwareinfo_data, a_sethardwareinfo)
+
+#set_packages
+cpuInfo_version = !pip list | grep -i py-cpuinfo
+pytorch_model_summary_version = !pip list | grep -i pytorch-model-summary
+
+
+e_packages = d1.entity('ex:Cell Packages', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setpackages = d1.activity('ex:set_packages()', )
+a_getVersion = d1.activity('ex:{package_name}.__version__')
+a_getVersion_py_cpuinfo = d1.activity('ex:!pip list | grep -i py-cpuinfo')
+a_getVersion_pytorch_model_summary = d1.activity('ex:!pip list | grep -i pytorch-model-summary')
+d1.wasStartedBy(a_setpackages, e_packages, time=datetime.datetime.now())
+d1.wasInformedBy(a_setpackages,a_getVersion)
+d1.wasInformedBy(a_setpackages,a_getVersion_py_cpuinfo)
+d1.wasInformedBy(a_setpackages,a_getVersion_pytorch_model_summary)
+d1.hadMember(e_notebook, e_packages)
+
+e_packages_data = d1.entity(
+    'ex:Packages Data',(
+        ('ex:numpy', np.__version__),
+    ('ex:ipywidgets', widgets.__version__),
+    ('ex:torch', torch.__version__),
+    ('ex:torchvision', torchvision.__version__),
+    ('ex:pytorch-ignite', pytorch_ignite.__version__),
+    ('ex:pytorch-lightning',pytorch_lightning.__version__),
+    ('ex:gputil', GPUtil.__version__),
+    ('ex:psutil', psutil.__version__),
+    ('ex:py-cpuinfo', cpuInfo_version[0]),
+	{% if visualization_tool == "comet.ml" %} ('ex:comet.ml', comet_ml.__version__),
+	{% elif visualization_tool == "Tensorboard" %} ('ex:tensorboardX', tensorboardX.__version__),
+	{% elif visualization_tool == "Aim" %} ('ex:aim', aim.__version__),
+	{% elif visualization_tool == "Weights & Biases" %} ('ex:wandb', wandb.__version__), {% endif %}
+    ('ex:prov', prov.__version__), 
+))
+d1.wasGeneratedBy(e_packages_data, a_setpackages)

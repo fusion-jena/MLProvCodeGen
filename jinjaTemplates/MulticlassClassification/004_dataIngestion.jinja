@@ -1,0 +1,95 @@
+#Data Ingestion
+starttime = datetime.datetime.now()
+
+{% if dataset == "Iris" %}
+iris = load_iris()
+X = iris['data']
+y = iris['target']
+names = iris['target_names']
+output_dim = len(names)
+feature_names = iris['feature_names']
+{% endif %}
+{% if dataset == "Spiral" %}
+#spiral
+column_names = ['0', '1', 'target']
+df = pd.read_csv("../datasets/spiral.csv", names = column_names, header = None)
+X = pd.DataFrame(df, columns=['0', '1'])
+y = pd.DataFrame(df, columns=['target'])
+y = df['target']
+names = ['1', '2', '3']
+output_dim = len(names)
+feature_names = ['0', '1']
+y = torch.tensor(df['target'].values)
+y = y-1
+y
+{% endif %}
+{% if dataset == "Aggregation" %}
+#Aggregation
+column_names = ['0', '1', 'target']
+df = pd.read_csv("../datasets/Aggregation.csv", names = column_names, header = None)
+X = pd.DataFrame(df, columns=['0', '1'])
+y = pd.DataFrame(df, columns=['target'])
+y = df['target']
+names = ['1', '2', '3', '4', '5', '6', '7']
+output_dim = len(names)
+feature_names = ['0', '1']
+y = torch.tensor(df['target'].values)
+y = y-1
+y
+{% endif %}
+{% if dataset == "R15" %}
+#R15
+column_names = ['0', '1', 'target']
+df = pd.read_csv("../datasets/R15.csv", names = column_names, header = None)
+X = pd.DataFrame(df, columns=['0', '1'])
+y = pd.DataFrame(df, columns=['target'])
+y = df['target']
+names = ['1','2','3','4','5','6','7','8']
+output_dim = len(names)
+feature_names = ['0','1']
+y = torch.tensor(df['target'].values)
+y = y-1
+y
+{% endif %}
+{% if dataset == "User" %}
+#User Data --> insert file path below and add column_names and names = number_outputClasses
+# feature names can stay as 0/1 or custom labels
+column_names = ['0', '1', 'target']
+df = pd.read_csv("../datasets/.csv", names = column_names,  header = None)
+X = pd.DataFrame(df, columns=['0', '1'])
+y = pd.DataFrame(df, columns=['target'])
+y = df['target']
+names = ['1', '2', '3']
+output_dim = len(names)
+feature_names = ['0', '1']
+y = torch.tensor(df['target'].values)
+y = y-1
+y
+{% endif %}
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+
+e_dataingestion = d1.entity('ex:Cell Data Ingestion', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+
+
+a_setdataingestion = d1.activity('ex:set_data_ingestion()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+d1.wasStartedBy(a_setdataingestion, e_dataingestion)
+d1.hadMember(e_notebook, e_dataingestion)
+e_dataingestion_data = d1.entity(
+    'ex:Data Ingestion Data',(
+        ('ex:dataset_id', '{{ dataset }}'),
+		{% if dataset == "Iris" %}
+		('ex:description', 'function: load_iris().DESCR'),
+		{% elif dataset == "Spiral" or dataset == "Aggregation" or dataset == "R15" %}
+		('ex:description', 'http://cs.joensuu.fi/sipu/datasets/ Section: "Shape sets"'),
+		{% else %}
+		('ex:description', ''),
+		{% endif %}
+        ('ex:output_dimensions', output_dim),
+        ('ex:samples_total',  len(X)),
+        ('ex:feature_dimensions', len(feature_names)),
+))
+d1.wasGeneratedBy(e_dataingestion_data, a_setdataingestion)

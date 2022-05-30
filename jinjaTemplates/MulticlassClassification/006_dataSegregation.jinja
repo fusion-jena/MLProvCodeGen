@@ -1,0 +1,25 @@
+# Data Segregation
+starttime = datetime.datetime.now()
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size={{ test_split }}, random_state={{ random_seed }})
+
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+
+e_datasegregation = d1.entity('ex:Cell Data Segregation', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setdatasegregation = d1.activity('ex:set_data_segregation()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+d1.wasStartedBy(a_setdatasegregation, e_datasegregation)
+d1.hadMember(e_notebook, e_datasegregation)
+e_datasegregation_data = d1.entity(
+    'ex:Data Segregation Data',(
+        ('ex:segregation_method', 'sklearn.model_selection.train_test_split'),
+        ('ex:test_size', {{ test_split }}),
+        ('ex:train_size', 1-{{ test_split }}), 
+        ('ex:random_state', {{ random_seed }}), 
+))
+d1.wasGeneratedBy(e_datasegregation_data, a_setdatasegregation)
+d1.wasInfluencedBy(e_datasegregation, e_datapreparation_data)

@@ -1,0 +1,4 @@
+ProvenanceName = ('Provenance_ImageClassification_' + timestring + '.json')
+
+with open('../GeneratedProvenanceData/'+ProvenanceName, 'w') as prov_file:
+    prov_file.write(d1.serialize(indent=2))

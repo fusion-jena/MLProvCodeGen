@@ -1,0 +1,8 @@
+{
+  "jupyter.lab.shortcuts": [],
+  "title": "extension",
+  "description": "extension settings.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

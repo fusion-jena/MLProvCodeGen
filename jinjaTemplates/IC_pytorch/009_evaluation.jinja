@@ -1,0 +1,18 @@
+starttime = datetime.datetime.now()
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+
+e_evaluation = d1.entity('ex:Cell Evaluation', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setevaluation = d1.activity('ex:set_evaluation()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+e_evaluation_data = d1.entity(
+    'ex:Evaluation Data',(
+        ('ex:accuracy', evaluator.state.metrics['accuracy']),
+		('ex:loss', evaluator.state.metrics['loss']),
+))
+d1.wasStartedBy(a_setevaluation, e_evaluation)
+d1.hadMember(e_notebook, e_evaluation)
+d1.wasGeneratedBy(e_evaluation_data, a_setevaluation)
+d1.wasInfluencedBy(e_evaluation, e_training_data)

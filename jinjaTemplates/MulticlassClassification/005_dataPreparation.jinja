@@ -1,0 +1,26 @@
+#Data Preperation
+starttime = datetime.datetime.now()
+# Scale data to have mean 0 and variance 1 
+# which is importance for convergence of the neural network
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+
+e_datapreparation = d1.entity('ex:Cell Data Preparation', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setdatapreparation = d1.activity('ex:set_data_preparation()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+
+d1.wasStartedBy(a_setdatapreparation, e_datapreparation)
+d1.hadMember(e_notebook, e_datapreparation)
+e_datapreparation_data = d1.entity(
+    'ex:Data Preparation Data',(
+        ('ex:number_operations', 1),
+        ('ex:transformation', 'sklearn.preprocessing.StandardScaler'),
+        ('ex:transformation_method', 'Standardscaler.fit_transform'),  
+))
+d1.wasGeneratedBy(e_datapreparation_data, a_setdatapreparation)
+d1.wasInfluencedBy(e_datapreparation, e_dataingestion_data)

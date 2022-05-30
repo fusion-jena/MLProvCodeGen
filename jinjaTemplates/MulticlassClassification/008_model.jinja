@@ -1,0 +1,73 @@
+starttime = datetime.datetime.now()
+
+#Use GPU?
+{% if use_gpu %}
+use_cuda = torch.cuda.is_available()
+{% else %}
+use_cuda = False
+{% endif %}
+device = torch.device("cuda" if use_cuda else "cpu")
+
+neuron_number = {{ neuron_number }}
+
+#Configure Neural Network Models
+class Model(nn.Module):
+    def __init__(self, input_dim):
+        super(Model, self).__init__()
+        self.layer1 = nn.Linear(input_dim, {{ neuron_number }})
+        self.layer2 = nn.Linear({{ neuron_number }}, {{ neuron_number }})
+        self.layer3 = nn.Linear({{ neuron_number }}, output_dim)
+        
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        x = {{ activation_func }}
+        return x
+
+model     = Model(X_train.shape[1])
+{% if default and optimizer == "torch.optim.SGD(" %}
+optimizer = {{ optimizer}}model.parameters(), lr = 1)
+{% elif default %}
+optimizer = {{ optimizer }}model.parameters())
+{% else %}
+lr={{ lr }} 
+{% if lr == 0 %}
+optimizer = {{ optimizer }}model.parameters())
+{% else %}
+optimizer = {{ optimizer }}model.parameters(), lr=lr) {% endif %}
+{% endif %}
+loss_fn   = {{ loss_func }}
+
+try:
+    lr
+except NameError:
+    default = 1
+    lr = None 
+else:
+    default = 0
+
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+
+e_modelparameters = d1.entity('ex:Cell Model Parameters', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setmodelparameters = d1.activity('ex:set_model_parameters()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+d1.wasStartedBy(a_setmodelparameters, e_modelparameters)
+d1.hadMember(e_notebook, e_modelparameters)
+e_modelparameters_data = d1.entity(
+    'ex:Model Parameters Data',(
+        ('ex:gpu_enable', 1),
+        ('ex:modelParameters', str(model)),
+        ('ex:neuron_number', neuron_number), 
+        ('ex:loss_function', '{{ loss_func }}'), 
+        ('ex:optimizer', '{{ optimizer }}'), 
+        ('ex:optimizer_default_learning_rate', default), 
+        ('ex:optimizer_learning_rate', str(lr)), 
+        ('ex:activation_function', '{{ activation_func }}'),  
+))
+d1.wasGeneratedBy(e_modelparameters_data, a_setmodelparameters)
+d1.wasInfluencedBy(e_modelparameters, e_datasegregation_data)
+
+model

@@ -1,0 +1,42 @@
+#ROC Curve 
+plt.figure(figsize=(10, 10))
+plt.plot([0, 1], [0, 1], 'k--')
+
+# One hot encoding
+enc = OneHotEncoder()
+Y_onehot = enc.fit_transform(y_test[:, np.newaxis]).toarray()
+
+with torch.no_grad():
+    y_pred = model(X_test).numpy()
+    fpr, tpr, threshold = roc_curve(Y_onehot.ravel(), y_pred.ravel())
+    
+plt.plot(fpr, tpr, label='AUC = {:.3f}'.format(auc(fpr, tpr)))
+AUC = '{:.5f}'.format(auc(fpr, tpr))
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title('ROC curve')
+plt.legend();
+
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+#set_evaluation
+
+e_evaluation = d1.entity('ex:Cell Evaluation', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setevaluation = d1.activity('ex:set_evaluation()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+d1.wasStartedBy(a_setevaluation, e_evaluation)
+d1.hadMember(e_notebook, e_evaluation)
+e_evaluation_data = d1.entity(
+    'ex:Evaluation Data',(
+        ('ex:Accuracy', accuracy_list[(len(accuracy_list)-1)]),
+        ('ex:Loss', loss_list[(len(loss_list)-1)]),
+        ('ex:Confusion Matrix', str(confusionMatrix)),
+        ('ex:AUC', float(AUC)),
+        ('ex:F1 Score', str(F1)),
+        ('ex:Mean Absolute Error', MAE),
+        ('ex:Mean Squared Error', MSE), 
+))
+d1.wasGeneratedBy(e_evaluation_data, a_setevaluation)
+d1.wasInfluencedBy(e_evaluation, e_training_data)
