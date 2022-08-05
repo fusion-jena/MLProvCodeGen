@@ -73,6 +73,7 @@ async function activate (app: JupyterFrontEnd, palette: ICommandPalette, launche
   content.id = 'MLProvCodeGen-content' // id used to add scrollbars in base.css
   widget.title.label = 'MLProvCodeGen';
   widget.title.closable = true;
+  
 // ------------------------------------------------------------------------------------------------------------------------------- //
 	// Header
 	const headerFlex = document.createElement('div');
@@ -135,7 +136,7 @@ async function activate (app: JupyterFrontEnd, palette: ICommandPalette, launche
 				console.log(provenanceDataObj); 
 				//console.log(provenanceDataObj.entity.experiment_info['experimentinfo:task_type']); 
 				const taskName = provenanceDataObj.entity['ex:Experiment Info Data']['ex:task_type'];
-				var path = window.location.href + '/tree/GeneratedNotebooks/'
+				var path = window.location.href + '/tree/extension/GeneratedNotebooks/'
 				var notebookPath = "('"+path+taskName+".ipynb', 'MLProvCodeGen')";
 				console.log('path:' +path);
 				//var notebookPath = "('http://localhost:8888/lab/tree/extension/GeneratedNotebooks/"+provenanceDataObj.entity.experiment_info['experimentinfo:task_type']+".ipynb', 'MLProvCodeGen')";
@@ -253,19 +254,9 @@ switch (problemSubmit) {
 						<div title="Data Segregation splits the available data into training data and testing data.\nMNIST and FashionMNIST consist of 60000 training images (10 Classes with 6000 samples for each class) and 10000 testing examples.\nCIFAR10 consists of 50000 training images and 10000 testing images.\nThe fake dataset generates 100 training examples and 10 testing examples.">
 							<label><i>Public datasets use premade testing datasets.</i></label>
 						</div>
+						
 					</div>
 					`;
-		
-		const seed = document.createElement('div');
-		content.node.appendChild(seed);
-		seed.innerHTML = `
-					<div class="flex-container2">
-						<div title="Seeds determine the sequence of numbers that a pseudorandom number generator generates.\nWhen the same seed is used for data segregation on the same dataset multiple times, then the training and testing datasets will always be identical.">
-							<label for="seed"> Random Seed</label>
-							<input type="number" id="seed" name="seed" value="2">
-						</div>
-					</div>
-						`;
 						
 		const IC_useGPU = document.createElement('div');
 		content.node.appendChild(IC_useGPU);
@@ -354,7 +345,7 @@ switch (problemSubmit) {
 						<div><b><u> Training</u></b></div>
 						<div title="For each epoch, the whole dataset will be iterated over once.\nIncreasing the # of epochs such that the model is trained longer might improve performance.">
 							<label for="epochs">How many epochs?</label>
-							<input type="number" id="epochs" name="epochs" value="2">
+							<input type="number" id="epochs" name="epochs" value="3">
 						</div>
 					</div>
 				`;
@@ -365,10 +356,21 @@ switch (problemSubmit) {
 					<div class="flex-container2">
 						<div title="Batch size defines how much data is input into the model before changing its parameters.\nWe recommend size 10 for FakeData and 128 for real data.">
 							<label for="batches"> Batch Size</label>
-							<input type="number" id="batches" name="batches" value="10">
+							<input type="number" id="batches" name="batches" value="128">
 						</div>
 					</div>
 				`;
+				
+		const seed = document.createElement('div');
+		content.node.appendChild(seed);
+		seed.innerHTML = `
+					<div class="flex-container2">
+						<div title="Seeds determine the sequence of numbers that a pseudorandom number generator generates.\nWhen the same seed is used for data segregation on the same dataset multiple times, then the training and testing datasets will always be identical.">
+							<label for="seed"> Random Seed for model training</label>
+							<input type="number" id="seed" name="seed" value="2">
+						</div>
+					</div>
+						`;		
 		 
 		const IC_checkpoint = document.createElement('div');
 		content.node.appendChild(IC_checkpoint);
@@ -539,12 +541,13 @@ switch (problemSubmit) {
 					},
 				}
 			};
+			console.log(quantityValue)
 			var method = 'ImageClassification_pytorch'
 			const reply = await generateNotebook(method, objBody, content)
 			console.log(reply);
 			
 			if (reply['greetings'] === 'success') {
-				var path = window.location.href + '/tree/GeneratedNotebooks/ImageClassification_PyTorch.ipynb'
+				var path = window.location.href + '/tree/extension/GeneratedNotebooks/ImageClassification_PyTorch.ipynb'
 				console.log(path)
 				const success_message = document.createElement('text');
 				content.node.appendChild(success_message);
@@ -571,8 +574,8 @@ case 'MulticlassClassification':
 						<div title="In data ingestion, you can select a specific dataset. This option selects the raw data, before any preprocessing.">
 							<label for="dataset">Which dataset do you want to use?</label>
 							<select name="dataset" id="dataset">
-								<option value="Spiral"> Spiral </option>
 								<option value="Iris"> Iris </option>
+								<option value="Spiral"> Spiral </option>
 								<option value="Aggregation"> Aggregation </option>
 								<option value="R15"> R15 </option>
 								<option value="User"> Use your own Data (.csv) </option>
@@ -586,7 +589,7 @@ case 'MulticlassClassification':
         MC_preprocessing_text.innerHTML = `
 					<div class="flex-container2">
 						<div><b><u> Data Preparation</u></b></div>
-						<div title="Scale feature range to [0,1]">
+						<div title="Data preparation is the pipeline step that takes the raw data from data ingestion and performs a number of operation on that data to better fit it to the machine learning task at hand and the model that we plan on using.\n The MinMaxScaler scales the data's feature range to [0,1]">
 							<label> <i>preprocessing: MinMaxScaler</i></label>
 						</div>
 					</div>
@@ -597,7 +600,7 @@ case 'MulticlassClassification':
         MC_random_seed.innerHTML = `
 					<div class="flex-container2">
 						<div><b><u> Data Segregation</u></b></div>
-							<div title="Data preparation is the pipeline step that takes the raw data from data ingestion and performs a number of operation on that data to better fit it to the machine learning task at hand and the model that we plan on using.\n The MinMaxScaler scales the data's feature range to [0,1]">
+<div title="Seeds determine the sequence of numbers that a pseudorandom number generator generates.\nWhen the same seed is used for data segregation on the same dataset multiple times, then the training and testing datasets will always be identical.">
 							<label for="random_seed">Random Seed for data Segregation (default: 2)</label>
 							<input type="number" id="random_seed" name="random_seed" value="2">
 						</div>
@@ -821,7 +824,7 @@ case 'MulticlassClassification':
 			const reply = await generateNotebook(method, objBody, content)
 			console.log(reply);
 			if (reply["greetings"] === 'success') {
-				var path = window.location.href + '/tree/GeneratedNotebooks/MulticlassClassification.ipynb'
+				var path = window.location.href + '/tree/extension/GeneratedNotebooks/MulticlassClassification.ipynb'
 				console.log(path)
 				const success_message = document.createElement('text');
 				content.node.appendChild(success_message);

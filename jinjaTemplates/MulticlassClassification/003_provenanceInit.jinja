@@ -47,20 +47,37 @@ d1.wasAssociatedWith(a_generateNotebook, ag_author, plan=e_MLProvCodeGen)
 d1.wasGeneratedBy(e_notebook, a_generateNotebook)
 
 #set_experimentinfo
+filename = 'MulticlassClassification.ipynb'
+filesize = get_size(os.path.getsize(filename))
+creation_time = time.ctime(os.path.getctime(filename))
+modification_time = time.ctime(os.path.getmtime(filename))
+
 e_experimentinfo = d1.entity('ex:Cell Experiment Info', (
     ('ex:type', 'notebook_cell'),
     ('ex:type', 'p-plan:step'),
 ))
 a_setexperimentinfo = d1.activity('ex:set_experiment_info()')
-a_setdate = d1.activity('ex:date.today()')
+a_filesize = d1.activity('ex:os.path.getsize()')
+a_converttime = d1.activity('ex:time.ctime()')
+a_creationtime = d1.activity('ex:os.path.getctime')
+a_modificationtime = d1.activity('ex:os.path.getmtime')
+a_getsize = d1.activity('ex:get_size()')
 
 d1.wasStartedBy(a_setexperimentinfo,e_experimentinfo, time=datetime.datetime.now())
-d1.wasInformedBy(a_setexperimentinfo, a_setdate)  
+d1.wasInformedBy(a_setexperimentinfo, a_creationtime)
+d1.wasInformedBy(a_setexperimentinfo, a_modificationtime)
+d1.wasInformedBy(a_filesize, a_getsize)
+d1.wasInformedBy(a_setexperimentinfo, a_filesize)
+d1.wasInformedBy(a_creationtime, a_converttime)
+d1.wasInformedBy(a_modificationtime, a_converttime)
+
 d1.hadMember(e_notebook, e_experimentinfo)
 e_experimentinfo_data = d1.entity(
     'ex:Experiment Info Data',(
-        ('ex:title', 'Multiclass Classification'),
-        ('ex:creation_date', str(date.today())),
+        ('ex:title', filename),
+		('ex:file size', str(filesize)),
+		('ex:creation_date', str(creation_time)),
+        ('ex:modification_date', str(modification_time)),
         ('ex:task_type', 'MulticlassClassification'),
 ))
 d1.wasGeneratedBy(e_experimentinfo_data, a_setexperimentinfo)
@@ -87,7 +104,6 @@ a_sethardwareinfo = d1.activity('ex:set_hardware_info()')
 a_platform_uname = d1.activity('ex:platform.uname()')
 a_cpuinfo = d1.activity('ex:cpuinfo.get_cpu_info()')
 a_svmemtotal = d1.activity('ex:svmem.total')
-a_getsize = d1.activity('ex:get_size(svmem.total)')
 a_GPUtilgetGPU = d1.activity('ex:GPUtil.getGPUs()')
 d1.wasStartedBy(a_sethardwareinfo, e_hardwareinfo, time=datetime.datetime.now())
 d1.wasInformedBy(a_sethardwareinfo, a_platform_uname)
@@ -138,6 +154,6 @@ e_packages_data = d1.entity(
         ('ex:gputil', GPUtil.__version__),
         ('ex:psutil', psutil.__version__),
         ('ex:py-cpuinfo', cpuInfo_version[0]),
-        ('ex:prov', prov.__version__), 
+        ('ex:prov', prov.__version__),
 ))
 d1.wasGeneratedBy(e_packages_data, a_setpackages)
