@@ -2,6 +2,12 @@
 
 ![Github Actions Status](https://github.com/fusion-jena/MLProvCodeGen/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fusion-jena/MLProvCodeGen/main?urlpath=lab)
 
+## Install
+
+```bash
+pip install MLProvCodeGen
+```
+
 Our goal in this research was to find out, whether provenance data can be used to support the end-to-end reproducibility of machine learning experiments.
 
 In short, provenance data is data that contains information about a specific datapoint; how, when, and by whom it was conceived, and by which processes (functions, methods) it was generated.
@@ -124,3 +130,9 @@ The following steps must be taken to add a new ML experiment to this extension:
 9.	Once the frontend, backend, and server connection work, your module has been added successfully.
 
 Note that while these steps might seem complicated, most of them only require copy-pasting already existing code. The only new part for most users is templating through Jinja. However, Jinja has good documentation, and its syntax is very simple, requiring only if-loops.
+
+### Uninstall
+
+```bash
+pip uninstall MLProvCodeGen
+```
