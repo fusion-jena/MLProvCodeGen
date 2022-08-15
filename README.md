@@ -1,37 +1,56 @@
 # MLProvCodeGen - Machine Learning Provenance Code Generator
 
-![Github Actions Status](https://github.com/fusion-jena/MLProvCodeGen/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fusion-jena/MLProvCodeGen/main?urlpath=lab)
+Our goal in this research was to find out, whether provenance data can be used to support the end-to-end reproducibility of machine learning experiments.
 
-MLProvCodeGen is a tool for provenance based code generation of ML experiments in the Jupyter environment. This tool is developed to help ML practitioners and data scientists and can also be used in education to showcase results of ML workflows for a problem with different parameters. It can be used to tune hyperparameters and see the difference in the results.
+In short, provenance data is data that contains information about a specific datapoint; how, when, and by whom it was conceived, and by which processes (functions, methods) it was generated.
 
+![provenance data example](https://user-images.githubusercontent.com/85288390/184615649-925cc96b-9372-4e27-90eb-1fe2e20c2f98.PNG)
 
-This extension is composed of a Python package named `MLProvCodeGen`
-for the server extension and a NPM package named `MLProvCodeGen`
-for the frontend extension.
+The functionalities of MLProvCodeGen can be split into 2 parts:
 
-
-## Requirements
-
-* JupyterLab >= 3.0
-
-## Install
-
-```bash
-pip install MLProvCodeGen
-```
-## Instructions
-
-To use MLProvCodeGen after installation, open the JupyterLab command line by pressing `ctrl+shift+c` and enter the command
-`Code Generation from Provenance Data`
-
-![MLProvCodeGen_CommandLine](https://user-images.githubusercontent.com/85288390/135293768-380ba9d1-338a-4d18-96bb-b35a11fb70a7.PNG)
+MLProvCodeGen's original purpose was to automatically generate code for training machine learning (ML) models, providing users multiple different options for machine learning tasks, datasets, model parameters, training parameters and evaluation metrics. 
+We then extended MLProvCodeGen to generate code according to real-world provenance data models, to automatically capture provenance data from the generated experiments, and to take provenance data files that were captured with MLProvCodeGen as input to generate one-to-one reproductions of the original experiments.
+MLProvCodeGen can also generate relational graphs of the captured provenance data, allowing for visual representation of the implemented experiments.
 
 
 
-And here is an example of a generated notebook:
+The specific use-cases for this project are twofold: 
 
-![NotebookExample_Multiclass_MLProvCodeGen](https://user-images.githubusercontent.com/85288390/135294765-5abdda78-efe7-4549-b0bb-aa91099f1351.PNG)
+1. Image Classification
+- We can generate code to train a ML model on image input files to classify handwritten digits (MNIST),
 
+clothing articles (FashionMNIST), and a mix of vehicles and animals (CIFAR10).
+
+![MNIST example](https://user-images.githubusercontent.com/85288390/184615694-2ca7f720-3a8a-4775-8ed3-921fabc1294b.PNG)
+
+2. Multiclass Classification
+- We can generate code to train a ML model on tabular data (.csv) to classify different species of iris flowers
+
+![iris example](https://user-images.githubusercontent.com/85288390/184615789-0f307120-43ff-4bc1-b95f-67efe139fa1e.PNG)
+
+and to also test different models using 'toy datasets' which are fake datasets specifically designed to mimic patterns that could occur in real-world data such as spirals.
+
+
+![Spiral example](https://user-images.githubusercontent.com/85288390/184615851-3f19081c-0b30-4c42-b314-41caa72f7f53.PNG)
+
+# How to use MLProvCodeGen
+
+
+The JupyterLab interface should look like this: 
+
+![jupyterlab startup](https://user-images.githubusercontent.com/85288390/184616379-53cf9ff3-8026-4a7a-9b0b-2d9aa48f1bfa.png)
+
+Please proceed by pressing the 'MLProvCodeGen' button located in the 'other' section to open the extension.
+
+![MLProvCodeGen startup](https://user-images.githubusercontent.com/85288390/184616409-7550e57b-23b2-4016-9390-b6b1fabda61d.png)
+
+Here is an example interface:
+
+![MLProvCodeGen_MCC_inputs](https://user-images.githubusercontent.com/85288390/135294673-c435f433-011e-488a-8222-0f53d7c39469.PNG)
+
+And generated notebooks look like this: 
+
+![execute notebook button red](https://user-images.githubusercontent.com/85288390/184616631-98c853b5-3fac-40ec-9652-4295b735858c.png)
 
 ## Troubleshoot
 
@@ -104,69 +123,6 @@ The following steps must be taken to add a new ML experiment to this extension:
 Note that while these steps might seem complicated, most of them only require copy-pasting already existing code. The only new part for most users is templating through Jinja. However, Jinja has good documentation, and its syntax is very simple, requiring only if-loops.
 
 
-
-### Uninstall
-
-```bash
-pip uninstall MLProvCodeGen
-```
-
-
-
-
-MLProvCodeGen is an abbreviation for 'Machine Learning Provenance Code Generator'.
-
-Our goal in this research was to find out, whether provenance data can be used to support the end-to-end reproducibility of machine learning experiments.
-
-In short, provenance data is data that contains information about a specific datapoint; how, when, and by whom it was conceived, and by which processes (functions, methods) it was generated.
-
-![provenance data example](https://user-images.githubusercontent.com/85288390/184615649-925cc96b-9372-4e27-90eb-1fe2e20c2f98.PNG)
-
-The functionalities of MLProvCodeGen can be split into 2 parts:
-
-MLProvCodeGen's original purpose was to automatically generate code for training machine learning (ML) models, providing users multiple different options for machine learning tasks, datasets, model parameters, training parameters and evaluation metrics. 
-We then extended MLProvCodeGen to generate code according to real-world provenance data models, to automatically capture provenance data from the generated experiments, and to take provenance data files that were captured with MLProvCodeGen as input to generate one-to-one reproductions of the original experiments.
-MLProvCodeGen can also generate relational graphs of the captured provenance data, allowing for visual representation of the implemented experiments.
-
-
-
-The specific use-cases for this project are twofold: 
-
-1. Image Classification
-- We can generate code to train a ML model on image input files to classify handwritten digits (MNIST),
-
-clothing articles (FashionMNIST), and a mix of vehicles and animals (CIFAR10).
-
-![MNIST example](https://user-images.githubusercontent.com/85288390/184615694-2ca7f720-3a8a-4775-8ed3-921fabc1294b.PNG)
-
-2. Multiclass Classification
-- We can generate code to train a ML model on tabular data (.csv) to classify different species of iris flowers
-
-![iris example](https://user-images.githubusercontent.com/85288390/184615789-0f307120-43ff-4bc1-b95f-67efe139fa1e.PNG)
-
-and to also test different models using 'toy datasets' which are fake datasets specifically designed to mimic patterns that could occur in real-world data such as spirals.
-
-
-![Spiral example](https://user-images.githubusercontent.com/85288390/184615851-3f19081c-0b30-4c42-b314-41caa72f7f53.PNG)
-
-# How to use MLProvCodeGen
-
-
-The JupyterLab interface should look like this: 
-
-![jupyterlab startup](https://user-images.githubusercontent.com/85288390/184616379-53cf9ff3-8026-4a7a-9b0b-2d9aa48f1bfa.png)
-
-Please proceed by pressing the 'MLProvCodeGen' button located in the 'other' section to open the extension.
-
-![MLProvCodeGen startup](https://user-images.githubusercontent.com/85288390/184616409-7550e57b-23b2-4016-9390-b6b1fabda61d.png)
-
-Here is an example interface:
-
-![MLProvCodeGen_MCC_inputs](https://user-images.githubusercontent.com/85288390/135294673-c435f433-011e-488a-8222-0f53d7c39469.PNG)
-
-And generated notebooks look like this: 
-
-![execute notebook button red](https://user-images.githubusercontent.com/85288390/184616631-98c853b5-3fac-40ec-9652-4295b735858c.png)
 
 
 
