@@ -26,9 +26,7 @@ To use MLProvCodeGen after installation, open the JupyterLab command line by pre
 
 ![MLProvCodeGen_CommandLine](https://user-images.githubusercontent.com/85288390/135293768-380ba9d1-338a-4d18-96bb-b35a11fb70a7.PNG)
 
-Here is an example interface:
 
-![MLProvCodeGen_MCC_inputs](https://user-images.githubusercontent.com/85288390/135294673-c435f433-011e-488a-8222-0f53d7c39469.PNG)
 
 And here is an example of a generated notebook:
 
@@ -150,5 +148,25 @@ and to also test different models using 'toy datasets' which are fake datasets s
 
 
 ![Spiral example](https://user-images.githubusercontent.com/85288390/184615851-3f19081c-0b30-4c42-b314-41caa72f7f53.PNG)
+
+# How to use MLProvCodeGen
+
+
+The JupyterLab interface should look like this: 
+
+![jupyterlab startup](https://user-images.githubusercontent.com/85288390/184616379-53cf9ff3-8026-4a7a-9b0b-2d9aa48f1bfa.png)
+
+Please proceed by pressing the 'MLProvCodeGen' button located in the 'other' section to open the extension.
+
+![MLProvCodeGen startup](https://user-images.githubusercontent.com/85288390/184616409-7550e57b-23b2-4016-9390-b6b1fabda61d.png)
+
+Here is an example interface:
+
+![MLProvCodeGen_MCC_inputs](https://user-images.githubusercontent.com/85288390/135294673-c435f433-011e-488a-8222-0f53d7c39469.PNG)
+
+And generated notebooks look like this: 
+
+![execute notebook button red](https://user-images.githubusercontent.com/85288390/184616631-98c853b5-3fac-40ec-9652-4295b735858c.png)
+
 
 
