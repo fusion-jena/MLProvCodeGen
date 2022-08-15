@@ -1,5 +1,7 @@
 # MLProvCodeGen - Machine Learning Provenance Code Generator
 
+![Github Actions Status](https://github.com/fusion-jena/MLProvCodeGen/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fusion-jena/MLProvCodeGen/main?urlpath=lab)
+
 Our goal in this research was to find out, whether provenance data can be used to support the end-to-end reproducibility of machine learning experiments.
 
 In short, provenance data is data that contains information about a specific datapoint; how, when, and by whom it was conceived, and by which processes (functions, methods) it was generated.
