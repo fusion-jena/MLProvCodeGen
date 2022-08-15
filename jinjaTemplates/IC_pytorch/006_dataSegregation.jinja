@@ -1,0 +1,134 @@
+starttime = datetime.datetime.now()
+# Set up device.
+{% if gpu %}
+use_cuda = torch.cuda.is_available()
+{% else %}
+use_cuda = False
+{% endif %}
+device = torch.device("cuda" if use_cuda else "cpu")
+{% if data_format == "Public dataset" %}
+batch_size = {{ batch_size }}
+print_every = {{ print_every }}  # batches
+# Wrap in data loader.
+{% if dataset == "FakeData" %}
+dataset = getattr(datasets, 'FakeData')
+training_dataset = dataset(size = 100, image_size = (3, 224, 224), num_classes = {{ num_classes }}, transform = transform)
+testing_dataset = dataset(size = 10, image_size = (3, 224, 224), num_classes = {{ num_classes }}, transform = transform)
+{% else %}
+training_dataset = dataset("./data", train=True, download=True, transform=transform)
+testing_dataset = dataset("./data", train=False, download=True, transform=transform)
+{% endif %}
+
+if use_cuda:
+    kwargs = {"pin_memory": True, "num_workers": 1}
+else:
+    kwargs = {}
+
+train_loader = DataLoader(training_dataset, batch_size=batch_size, shuffle=True, **kwargs)
+test_loader = DataLoader(testing_dataset, batch_size=batch_size, shuffle=False, **kwargs)
+val_loader = None
+
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+dataInfo = testing_dataset.__len__
+for lines in str(dataInfo).splitlines():
+    if 'Number of datapoints:' in lines:
+        instances_testing = lines
+        break
+    else:
+        instances_testing = 'no_data'
+for lines in str(dataInfo).splitlines():
+    if 'Root location:' in lines:
+        root_testing = lines
+        break
+    else:
+        root_testing = 'no_data'
+for lines in str(dataInfo).splitlines():
+    if 'Split:' in lines:
+        split_testing = lines
+        break
+    else:
+        split_testing = 'no_data'
+e_datasegregation = d1.entity('ex:Cell Data Segregation', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+a_setdatasegregation = d1.activity('ex:set_data_segregation()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+d1.wasStartedBy(a_setdatasegregation, e_datasegregation)
+d1.hadMember(e_notebook, e_datasegregation)
+e_datasegregation_data = d1.entity(
+    'ex:Data Segregation Data',(
+        ('ex:training_dataset', str(instances_training + root_training + split_training)),
+		('ex:testing_dataset', str(instances_testing + root_testing + split_testing)), 
+))
+d1.wasGeneratedBy(e_datasegregation_data, a_setdatasegregation)
+d1.wasInfluencedBy(e_datasegregation, e_datapreparation_data)
+d1.wasInformedBy(a_setdatasegregation, a_getlength)
+{% else %}
+### Preprocessing
+def preprocess(data, name):
+    if data is None:  # val/test can be empty
+        return None
+
+    {% if data_format == "Image files" %}
+    # Read image files to pytorch dataset.
+    transform = transforms.Compose([
+        transforms.Resize(256), 
+        transforms.CenterCrop(224), 
+        transforms.ToTensor(), 
+        {# TODO: Maybe add normalization option even if model is not pretrained #}
+        {% if pretrained %}
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        {% endif %}
+    ])
+    dataset = datasets.ImageFolder(data, transform=transform)
+    {% elif data_format == "Numpy arrays" %}
+    images, labels = data
+
+    # Rescale images to 0-255 and convert to uint8.
+    # Note: This is done for each dataset individually, which is usually ok if all 
+    # datasets look similar. If not, scale all datasets based on min/ptp of train set.
+    images = (images - np.min(images)) / np.ptp(images) * 255
+    images = images.astype(np.uint8)
+
+    # If images are grayscale, convert to RGB by duplicating channels.
+    if images.shape[1] == 1:
+        images = np.stack((images[:, 0],) * 3, axis=1)
+
+    # Resize images and transform images torch tensor.
+    images = images.transpose((0, 2, 3, 1))  # channels-last, required for transforms.ToPILImage
+    transform = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(256), 
+        transforms.CenterCrop(224), 
+        transforms.ToTensor(), 
+        {% if pretrained %}
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        {% endif %}
+    ])
+    {# TODO: This is quite ugly and very inefficient #}
+    images = torch.stack(list(map(transform, images)))
+
+    # Convert labels to tensors.
+    labels = torch.from_numpy(labels).long()
+
+    # Construct dataset.
+    dataset = TensorDataset(images, labels)
+    {% endif %}
+
+    # Wrap in data loader.
+    {% if gpu %}
+    if use_cuda:
+        kwargs = {"pin_memory": True, "num_workers": 1}
+    else:
+        kwargs = {}
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=(name=="train"), **kwargs)
+    {% else %}
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=(name=="train"))
+    {% endif %}
+    return loader
+
+train_loader = preprocess(train_data, "train")
+val_loader = preprocess(val_data, "val")
+test_loader = preprocess(test_data, "test")
+{% endif %}

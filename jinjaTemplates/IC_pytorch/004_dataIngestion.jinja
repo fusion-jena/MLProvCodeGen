@@ -1,0 +1,199 @@
+starttime = datetime.datetime.now()
+{% if data_format == "Numpy arrays" %}
+def fake_data():
+    # 4 images of shape 1x16x16 with labels 0, 1, 2, 3
+    return [np.random.rand(4, 1, 16, 16), np.arange(4)]
+
+{% elif data_format == "Image files" %}
+# COMMENT THIS OUT IF YOU USE YOUR OWN DATA.
+# Download example data into ./data/image-data (4 image files, 2 for "dog", 2 for "cat").
+url = "https://github.com/jrieke/traingenerator/raw/main/data/fake-image-data.zip"
+zip_path, _ = urllib.request.urlretrieve(url)
+with zipfile.ZipFile(zip_path, "r") as f:
+    f.extractall("data")
+
+{% endif %}
+{% if data_format == "Numpy arrays" %}
+# INSERT YOUR DATA HERE
+# Expected format: [images, labels]
+# - images has array shape (num samples, color channels, height, width)
+# - labels has array shape (num samples, )
+train_data = fake_data()  # required
+val_data = fake_data()    # optional
+test_data = None          # optional
+{% elif data_format == "Image files" %}
+# INSERT YOUR DATA HERE
+# Expected format: One folder per class, e.g.
+# train
+# --- dogs
+# |   +-- lassie.jpg
+# |   +-- komissar-rex.png
+# --- cats
+# |   +-- garfield.png
+# |   +-- smelly-cat.png
+#
+# Example: https://github.com/jrieke/traingenerator/tree/main/data/image-data
+train_data = "data/image-data"  # required
+val_data = "data/image-data"    # optional
+test_data = None                # optional
+{% endif %}
+
+{% if visualization_tool == "Tensorboard" or checkpoint %}
+experiment_id = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+{% endif %}
+{% if visualization_tool == "Tensorboard" %}
+writer = SummaryWriter(logdir=f"logs/{experiment_id}")
+{% elif visualization_tool == "Aim" %}
+aim_session = Session({% if aim_experiment %}experiment="{{ aim_experiment }}"{% endif %})
+aim_session.set_params({"lr": lr, "batch_size": batch_size, "num_epochs": num_epochs}, name="hparams")
+{% elif visualization_tool == "Weights & Biases" %}
+wandb.init(
+{% if wb_project %}
+    project="{{ wb_project }}", 
+{% endif %}
+{% if wb_name %}
+    name="{{ wb_name }}", 
+{% endif %}
+    config={"lr": lr, "batch_size": batch_size, "num_epochs": num_epochs}
+)
+{% elif visualization_tool == "comet.ml" %}
+experiment = Experiment("{{ comet_api_key }}"{% if comet_project %}, project_name="{{ comet_project }}"{% endif %})
+{% endif %}
+{% if checkpoint %}
+checkpoint_dir = Path(f"checkpoints/{experiment_id}")
+checkpoint_dir.mkdir(parents=True, exist_ok=True)
+{% endif %}
+
+{% if data_format == "Public dataset" %}
+{% if dataset == "FakeData" %}
+dataset = getattr(datasets, 'FakeData')
+training_dataset = dataset(size = 100, image_size = (3, 224, 224), num_classes = {{ num_classes }})
+testing_dataset = dataset(size = 10, image_size = (3, 224, 224), num_classes = {{ num_classes }})
+{% else %}
+dataset = getattr(datasets, '{{ dataset }}')
+training_dataset = dataset("./data", train=True, download=True)
+testing_dataset = dataset("./data", train=False, download=True)
+{% endif %}
+endtime = datetime.datetime.now()
+executionTime = endtime-starttime
+
+dataInfo = training_dataset.__len__
+for lines in str(dataInfo).splitlines():
+    if 'Number of datapoints:' in lines:
+        instances_training = lines
+        break
+    else:
+        instances_training = 'no_data'
+for lines in str(dataInfo).splitlines():
+    if 'Root location:' in lines:
+        root_training = lines
+        break
+    else:
+        root_training = 'no_data'
+for lines in str(dataInfo).splitlines():
+    if 'Split:' in lines:
+        split_training = lines
+        break
+    else:
+        split_training = 'no_data'
+e_dataingestion = d1.entity('ex:Cell Data Ingestion', (
+    ('ex:type', 'notebook_cell'),
+    ('ex:type', 'p-plan:step'),
+))
+
+
+a_setdataingestion = d1.activity('ex:set_data_ingestion()', startTime=starttime, endTime=endtime, other_attributes={'prov:executionTime': str(executionTime)})
+d1.wasStartedBy(a_setdataingestion, e_dataingestion)
+d1.hadMember(e_notebook, e_dataingestion)
+e_dataingestion_data = d1.entity(
+    'ex:Data Ingestion Data',(
+        ('ex:data_format', '{{ data_format }}'),
+        ('ex:dataset_id', '{{ dataset }}'),
+		{% if dataset == "FakeData" %}
+		('ex:description', 'A fake dataset that returns randomly generated images and returns them as PIL images.'),
+		{% elif dataset == "MNIST" %}
+		('ex:description', 'http://yann.lecun.com/exdb/mnist/'),
+		{% elif dataset == "FashionMNIST" %}
+		('ex:description', 'https://github.com/zalandoresearch/fashion-mnist'),
+		{% elif dataset == "CIFAR10" %}
+		('ex:description', 'https://www.cs.toronto.edu/~kriz/cifar.html'),
+		{% elif dataset == "user" %}
+		('ex:description', ''),
+		{% endif %}
+		('ex:classes', {{ num_classes }}),
+		('ex:training_samples', str(instances_training)),
+		('ex:root_location', str(root_training)),
+))
+d1.wasGeneratedBy(e_dataingestion_data, a_setdataingestion)
+a_splitlines = ('ex:str(dataInfo).splitlines()[2]')
+a_getlength = d1.activity('ex:{dataset}.__len__()')
+d1.wasInformedBy(a_setdataingestion, a_getlength)
+{% endif %}
+{% if data_format == "FALSE" %}
+### Preprocessing
+def preprocess(data, name):
+    if data is None:  # val/test can be empty
+        return None
+
+    {% if data_format == "Image files" %}
+    # Read image files to pytorch dataset.
+    transform = transforms.Compose([
+        transforms.Resize(256), 
+        transforms.CenterCrop(224), 
+        transforms.ToTensor(), 
+        {# TODO: Maybe add normalization option even if model is not pretrained #}
+        {% if pretrained %}
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        {% endif %}
+    ])
+    dataset = datasets.ImageFolder(data, transform=transform)
+    {% elif data_format == "Numpy arrays" %}
+    images, labels = data
+
+    # Rescale images to 0-255 and convert to uint8.
+    # Note: This is done for each dataset individually, which is usually ok if all 
+    # datasets look similar. If not, scale all datasets based on min/ptp of train set.
+    images = (images - np.min(images)) / np.ptp(images) * 255
+    images = images.astype(np.uint8)
+
+    # If images are grayscale, convert to RGB by duplicating channels.
+    if images.shape[1] == 1:
+        images = np.stack((images[:, 0],) * 3, axis=1)
+
+    # Resize images and transform images torch tensor.
+    images = images.transpose((0, 2, 3, 1))  # channels-last, required for transforms.ToPILImage
+    transform = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(256), 
+        transforms.CenterCrop(224), 
+        transforms.ToTensor(), 
+        {% if pretrained %}
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        {% endif %}
+    ])
+    {# TODO: This is quite ugly and very inefficient #}
+    images = torch.stack(list(map(transform, images)))
+
+    # Convert labels to tensors.
+    labels = torch.from_numpy(labels).long()
+
+    # Construct dataset.
+    dataset = TensorDataset(images, labels)
+    {% endif %}
+
+    # Wrap in data loader.
+    {% if gpu %}
+    if use_cuda:
+        kwargs = {"pin_memory": True, "num_workers": 1}
+    else:
+        kwargs = {}
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=(name=="train"), **kwargs)
+    {% else %}
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=(name=="train"))
+    {% endif %}
+    return loader
+
+train_loader = preprocess(train_data, "train")
+val_loader = preprocess(val_data, "val")
+test_loader = preprocess(test_data, "test")
+{% endif %}
