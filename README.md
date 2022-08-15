@@ -138,6 +138,7 @@ The specific use-cases for this project are twofold: 
 - We can generate code to train a ML model on image input files to classify handwritten digits (MNIST),
 
 clothing articles (FashionMNIST), and a mix of vehicles and animals (CIFAR10).
+
 ![MNIST example](https://user-images.githubusercontent.com/85288390/184615694-2ca7f720-3a8a-4775-8ed3-921fabc1294b.PNG)
 
 2. Multiclass Classification
