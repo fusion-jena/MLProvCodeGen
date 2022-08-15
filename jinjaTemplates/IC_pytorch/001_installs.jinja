@@ -1,8 +1,0 @@
-#pip install numpy===1.22.2 ipywidgets===7.6.5 torch===1.10.2 torchvision===0.11.3 pytorch-ignite===0.4.6 pytorch-lightning===1.5.10 gputil===1.4.0 psutil===5.9.0 py-cpuinfo===8.0.0 prov===2.0.0 pydot===1.4.2{% if visualization_tool == "Tensorboard" %} tensorboardX tensorboard{% endif %}{% if visualization_tool == "Weights & Biases" %} wandb{% endif %}{% if visualization_tool == "comet.ml" %} comet_ml{% endif %}{% if visualization_tool == "Aim" %} aim{% endif %} --user
-#torch currently not supported with python 3.10, downgrading to python 3.9.7 possibly required
-{% if visualization_tool == "Weights & Biases" %}
-
-# Also, you need to login to Weights & Biases on the terminal:
-# wandb login
-
-{% endif %}
