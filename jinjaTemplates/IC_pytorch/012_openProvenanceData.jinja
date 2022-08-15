@@ -1,2 +1,7 @@
-print(urlcombined+ProvenanceName)
-print(urlcombined2+ProvenanceName)
+provenance_open = widgets.Button(description = 'Open Provenance Data File')
+display(provenance_open)
+
+def on_button_clicked(b):
+    provenance_open.on_click = webbrowser.open('http://localhost:8888/lab/tree/extension/GeneratedProvenanceData/'+ProvenanceName)
+
+provenance_open.on_click(on_button_clicked)
