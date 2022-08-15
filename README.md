@@ -112,3 +112,57 @@ Note that while these steps might seem complicated, most of them only require co
 ```bash
 pip uninstall MLProvCodeGen
 ```
+
+
+Welcome! 
+Completing this survey will take 20-30 Minutes.
+
+Note: Please complete this survey on a computer or laptop.
+
+
+
+In this survey, we will ask you to evaluate your experience with MLProvCodeGen and to complete user tasks. 
+
+MLProvCodeGen can be used on a virtual machine, meaning that there will be no changes to your system and no installation required, available at:
+
+ https://mybinder.org/v2/gh/fusion-jena/MLProvCodeGen/HEAD
+(Please open the link now as the virtual machine can have varying startup times)
+
+Note: In case you encounter any error messages while following the above link, please try reloading the page or waiting a few minutes. There are several errors that might occur, however most of them can be solved by reloading and/or waiting.
+
+
+
+Before we get into the questions, we will provide you with an introduction to MLProvCodeGen:
+
+
+MLProvCodeGen is an abbreviation for 'Machine Learning Provenance Code Generator'.
+
+Our goal in this research was to find out, whether provenance data can be used to support the end-to-end reproducibility of machine learning experiments.
+
+In short, provenance data is data that contains information about a specific datapoint; how, when, and by whom it was conceived, and by which processes (functions, methods) it was generated.
+
+
+
+The functionalities of MLProvCodeGen can be split into 2 parts:
+
+MLProvCodeGen's original purpose was to automatically generate code for training machine learning (ML) models, providing users multiple different options for machine learning tasks, datasets, model parameters, training parameters and evaluation metrics. 
+We then extended MLProvCodeGen to generate code according to real-world provenance data models, to automatically capture provenance data from the generated experiments, and to take provenance data files that were captured with MLProvCodeGen as input to generate one-to-one reproductions of the original experiments.
+MLProvCodeGen can also generate relational graphs of the captured provenance data, allowing for visual representation of the implemented experiments.
+
+
+
+The specific use-cases for this project are twofold: 
+
+1. Image Classification
+- We can generate code to train a ML model on image input files to classify handwritten digits (MNIST),
+
+clothing articles (FashionMNIST), and a mix of vehicles and animals (CIFAR10).
+
+2. Multiclass Classification
+- We can generate code to train a ML model on tabular data (.csv) to classify different species of iris flowers
+
+and to also test different models using 'toy datasets' which are fake datasets specifically designed to mimic patterns that could occur in real-world data such as spirals.
+
+
+
+
