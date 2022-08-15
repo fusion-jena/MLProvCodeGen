@@ -35,6 +35,7 @@ and to also test different models using 'toy datasets' which are fake datasets s
 
 # How to use MLProvCodeGen
 
+Please open MLProvCodeGen by using the **Binder Button** at the top of this page. This opens a virtual installation.
 
 The JupyterLab interface should look like this: 
 
@@ -121,8 +122,3 @@ The following steps must be taken to add a new ML experiment to this extension:
 9.	Once the frontend, backend, and server connection work, your module has been added successfully.
 
 Note that while these steps might seem complicated, most of them only require copy-pasting already existing code. The only new part for most users is templating through Jinja. However, Jinja has good documentation, and its syntax is very simple, requiring only if-loops.
-
-
-
-
-
