@@ -168,8 +168,8 @@ async function activate (app: JupyterFrontEnd, palette: ICommandPalette, launche
 			<div>
 				<label for="exercise">Choose a machine learning exercise:</label>
 				<select name="exercise" id="exercise">
-					<option value="ImageClassification"> Image Classification </option>
 					<option value="MulticlassClassification"> Multiclass Classification</option>
+					<option value="ImageClassification"> Image Classification </option>
 				</select>
 			</div>
 		</div>
