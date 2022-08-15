@@ -114,25 +114,6 @@ pip uninstall MLProvCodeGen
 ```
 
 
-Welcome! 
-Completing this survey will take 20-30 Minutes.
-
-Note: Please complete this survey on a computer or laptop.
-
-
-
-In this survey, we will ask you to evaluate your experience with MLProvCodeGen and to complete user tasks. 
-
-MLProvCodeGen can be used on a virtual machine, meaning that there will be no changes to your system and no installation required, available at:
-
- https://mybinder.org/v2/gh/fusion-jena/MLProvCodeGen/HEAD
-(Please open the link now as the virtual machine can have varying startup times)
-
-Note: In case you encounter any error messages while following the above link, please try reloading the page or waiting a few minutes. There are several errors that might occur, however most of them can be solved by reloading and/or waiting.
-
-
-
-Before we get into the questions, we will provide you with an introduction to MLProvCodeGen:
 
 
 MLProvCodeGen is an abbreviation for 'Machine Learning Provenance Code Generator'.
@@ -141,7 +122,7 @@ Our goal in this research was to find out, whether provenance data can be used t
 
 In short, provenance data is data that contains information about a specific datapoint; how, when, and by whom it was conceived, and by which processes (functions, methods) it was generated.
 
-
+![provenance data example](https://user-images.githubusercontent.com/85288390/184615649-925cc96b-9372-4e27-90eb-1fe2e20c2f98.PNG)
 
 The functionalities of MLProvCodeGen can be split into 2 parts:
 
@@ -157,12 +138,16 @@ The specific use-cases for this project are twofold: 
 - We can generate code to train a ML model on image input files to classify handwritten digits (MNIST),
 
 clothing articles (FashionMNIST), and a mix of vehicles and animals (CIFAR10).
+![MNIST example](https://user-images.githubusercontent.com/85288390/184615694-2ca7f720-3a8a-4775-8ed3-921fabc1294b.PNG)
 
 2. Multiclass Classification
 - We can generate code to train a ML model on tabular data (.csv) to classify different species of iris flowers
 
+![iris example](https://user-images.githubusercontent.com/85288390/184615789-0f307120-43ff-4bc1-b95f-67efe139fa1e.PNG)
+
 and to also test different models using 'toy datasets' which are fake datasets specifically designed to mimic patterns that could occur in real-world data such as spirals.
 
 
+![Spiral example](https://user-images.githubusercontent.com/85288390/184615851-3f19081c-0b30-4c42-b314-41caa72f7f53.PNG)
 
 
